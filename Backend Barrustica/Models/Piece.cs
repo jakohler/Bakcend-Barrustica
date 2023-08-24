@@ -7,5 +7,6 @@
         public string? Description { get; set; }
         public string? Style { get; set; }
         public string? Image { get; set; }
+        public int IdArtist { get; set; }
     }
 }

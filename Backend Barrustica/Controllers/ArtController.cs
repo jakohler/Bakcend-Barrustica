@@ -38,6 +38,20 @@ namespace Backend_Barrustica.Controllers
         }
 
         [HttpGet]
+        [Route("ListArtist")]
+        public async Task<ActionResult<List<Artist>>> GetListArtist()
+        {
+            List<Artist> result = await _artService.GetListArtist();
+
+            if (result == null)
+            {
+                return BadRequest("No artist");
+            }
+
+            return Ok(result);
+        }
+
+        [HttpGet]
         [Route("piece")]
         public IActionResult GetPiece([FromQuery] int pieceId)
         {
@@ -53,9 +67,9 @@ namespace Backend_Barrustica.Controllers
 
         [HttpPost]
         [Route("AddPiece")]
-        public IActionResult AddPiece([FromQuery] string name, [FromQuery] string description, [FromQuery] string style, [FromQuery] string image)
+        public IActionResult AddPiece([FromBody] Piece piece)
         {
-            _artService.AddPiece(name, description, style, image);
+            _artService.AddPiece(piece.Name, piece.Description, piece.Style, piece.Image, piece.IdArtist);
 
             return Ok();
         }

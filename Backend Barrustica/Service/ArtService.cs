@@ -8,8 +8,9 @@ namespace Backend_Barrustica.Service
     {
         Artist GetArtist(int artistId);
         void AddArtist(string name, string description, string image);
+        Task<List<Artist>> GetListArtist();
         Piece GetPiece(int pieceId);
-        void AddPiece(string name, string description, string style, string image);
+        void AddPiece(string name, string description, string style, string image, int idArtist);
         Task<List<Piece>> GetListPiece();
     }
     public class ArtService : IArtService
@@ -19,7 +20,7 @@ namespace Backend_Barrustica.Service
             Artist result;
             using (var context = new BarrusticaDbContext())
             {
-                result = context.ArtistEntity.FirstOrDefault(a => a.Id == artistId);
+                result = context.ArtistEntity.First(a => a.Id == artistId);
             }
 
             return result;
@@ -39,17 +40,27 @@ namespace Backend_Barrustica.Service
                 context.SaveChanges();
             }
         }
+        public async Task<List<Artist>> GetListArtist()
+        {
+            List<Artist> result;
+            using (var context = new BarrusticaDbContext())
+            {
+                result = await context.ArtistEntity.ToListAsync();
+            }
+
+            return result;
+        }
         public Piece GetPiece(int pieceId)
         {
             Piece result;
             using (var context = new BarrusticaDbContext())
             {
-                result = context.PieceEntity.FirstOrDefault(a => a.Id == pieceId);
+                result = context.PieceEntity.First(a => a.Id == pieceId);
             }
 
             return result;
         }
-        public void AddPiece(string name, string description, string style, string image)
+        public void AddPiece(string name, string description, string style, string image, int idArtist)
         {
             using (var context = new BarrusticaDbContext())
             {
@@ -58,7 +69,8 @@ namespace Backend_Barrustica.Service
                     Name = name,
                     Description = description,
                     Style = style,
-                    Image = image
+                    Image = image,
+                    IdArtist = idArtist
                 };
 
                 context.PieceEntity.Add(newPiece);

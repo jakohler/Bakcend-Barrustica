@@ -13,7 +13,6 @@ public class Startup
             {
                 webBuilder.UseStartup<Startup>();
             });
-    // ... otros códigos de configuración ...
 
     public void ConfigureServices(IServiceCollection services)
     {
@@ -21,8 +20,8 @@ public class Startup
         services.AddEndpointsApiExplorer();
         services.AddSwaggerGen();
         services.AddScoped<IArtService, ArtService>();
+        services.AddScoped<IEmailService, EmailService>();
 
-        // Agregar configuración de CORS
         services.AddCors(options =>
         {
             options.AddPolicy("AllowNextJsApp", builder =>
@@ -32,27 +31,26 @@ public class Startup
                        .AllowAnyHeader();
             });
         });
-
-        // ... otros servicios ...
     }
 
-    // ... otros métodos de configuración ...
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        // ... otros códigos de configuración ...
-
         app.UseRouting();
 
-        // Habilitar CORS
+        // enable CORS
         app.UseCors("AllowNextJsApp");
 
         app.UseAuthorization();
 
-        // ... otros middlewares ...
-
         app.UseEndpoints(endpoints =>
         {
             endpoints.MapControllers();
+        });
+
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mi API V1"); // Asegúrate de ajustar la ruta al archivo JSON de Swagger
         });
     }
 }
