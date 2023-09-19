@@ -26,13 +26,26 @@ namespace Backend_Barrustica.Controllers
         [Route("SignUp")]
         public async Task<ActionResult> SignUp([FromBody] User user)
         {
-
+            User? existUser;
+            User? existEmail;
             // Generar el código de autenticación
             string authCode = GenerateAuthenticationCode();
 
             // Lógica para registrar al usuario en la base de datos usando Entity Framework
             using (var context = new BarrusticaDbContext())
             {
+                existUser = await context.UserEntity.FirstOrDefaultAsync(a => a.Username == user.Username);
+                existEmail = await context.UserEntity.FirstOrDefaultAsync(a => a.Email == user.Email);
+
+                if (existUser != null)
+                {
+                    return BadRequest("UserName already exist");
+                }
+                else if (existEmail != null)
+                {
+                    return BadRequest("Email already exist");
+                }
+
                 var newUser = new User
                 {
                     Username = user.Username,
@@ -43,8 +56,8 @@ namespace Backend_Barrustica.Controllers
                 };
 
                 context.UserEntity.Add(newUser);
-                context.SaveChanges();
-            }
+                context.SaveChanges();        
+            }  
 
             // Enviar el código por correo electrónico
             await _emailService.SendEmailAsync(user.Email, "Código de autenticación", $"Tu código de autenticación es: {authCode}");
@@ -77,18 +90,18 @@ namespace Backend_Barrustica.Controllers
         {
             // Lógica para confirmar el registro del usuario en la base de datos usando Entity Framework
             // Devuelve un resultado adecuado (por ejemplo, Ok() o BadRequest())
-            User user;
+            User? user;
             using (var context = new BarrusticaDbContext())
             {
-                user = await context.UserEntity.FirstAsync(a => a.Username == userName && a.Password == password);
+                user = await context.UserEntity.FirstOrDefaultAsync(a => a.Username == userName && a.Password == password);
             }
 
-            if(user != null)
+            if(user == null)
             {
-                return Ok();
+                return BadRequest("The username or password is not correct");
             }
 
-            return BadRequest("The username or password is not correct");
+            return Ok(user);
         }
 
         private string GenerateAuthenticationCode()

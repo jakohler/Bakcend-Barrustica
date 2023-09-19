@@ -1,6 +1,6 @@
 ﻿namespace Backend_Barrustica.Models
 {
-    public class Artist
+    public class Seminario
     {
         public int Id { get; set; }
         public string? Name { get; set; }

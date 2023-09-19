@@ -12,13 +12,13 @@ namespace Backend_Barrustica.Service
     {
         private readonly string SmtpHost = "smtp.gmail.com";
         private readonly int SmtpPort = 587;
-        private readonly string SmtpUsername = "jaelkpo@gmail.com";
-        private readonly string SmtpPassword = "yyeqqjdggbhxsebu";
+        private readonly string SmtpUsername = "barrusticataller@gmail.com";
+        private readonly string SmtpPassword = "koaz romn ffwz bvwh";
 
         public async Task SendEmailAsync(string toEmail, string subject, string message)
         {
             var mimeMessage = new MimeMessage();
-            mimeMessage.From.Add(new MailboxAddress("Barrustica admin account", SmtpUsername));
+            mimeMessage.From.Add(new MailboxAddress("Barrústica", SmtpUsername));
             mimeMessage.To.Add(new MailboxAddress("", toEmail)); // Destination email address
             mimeMessage.Subject = subject;
 

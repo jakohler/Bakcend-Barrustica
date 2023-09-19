@@ -15,10 +15,10 @@ namespace Backend_Barrustica.Controllers
         }
 
         [HttpGet]
-        [Route("artist")]
-        public IActionResult GetArtist([FromQuery] int artistId)
+        [Route("taller")]
+        public IActionResult GetTaller([FromQuery] int tallerId)
         {
-            Artist result = _artService.GetArtist(artistId);
+            Taller result = _artService.GetTaller(tallerId);
 
             if(result == null)
             {
@@ -29,23 +29,46 @@ namespace Backend_Barrustica.Controllers
         }
 
         [HttpPost]
-        [Route("AddArtist")]
-        public IActionResult AddArtist([FromQuery] string name, [FromQuery] string description, [FromQuery] string image)
+        [Route("AddTaller")]
+        public IActionResult AddTaller([FromBody] Taller taller)
         {
-            _artService.AddArtist(name, description, image);
+            _artService.AddTaller(taller.Name, taller.Description, taller.Image);
 
             return Ok();
         }
 
         [HttpGet]
-        [Route("ListArtist")]
-        public async Task<ActionResult<List<Artist>>> GetListArtist()
+        [Route("ListTaller")]
+        public async Task<ActionResult<List<Taller>>> GetListTaller()
         {
-            List<Artist> result = await _artService.GetListArtist();
+            List<Taller> result = await _artService.GetListTaller();
 
             if (result == null)
             {
-                return BadRequest("No artist");
+                return BadRequest("No taller");
+            }
+
+            return Ok(result);
+        }
+
+        [HttpPost]
+        [Route("AddSeminario")]
+        public IActionResult AddSeminario([FromBody] Seminario seminario)
+        {
+            _artService.AddSeminario(seminario.Name, seminario.Description, seminario.Image);
+
+            return Ok();
+        }
+
+        [HttpGet]
+        [Route("ListSeminario")]
+        public async Task<ActionResult<List<Seminario>>> GetListSeminario()
+        {
+            List<Seminario> result = await _artService.GetListSeminario();
+
+            if (result == null)
+            {
+                return BadRequest("No Seminario");
             }
 
             return Ok(result);
@@ -86,6 +109,14 @@ namespace Backend_Barrustica.Controllers
             }
 
             return Ok(result);
+        }
+        [HttpDelete]
+        [Route("DeleteItem")]
+        public ActionResult DeleteItem([FromQuery] string image, [FromQuery] string type)
+        {
+            _artService.DeleteItem(image, type);
+
+            return Ok();
         }
     }
 }

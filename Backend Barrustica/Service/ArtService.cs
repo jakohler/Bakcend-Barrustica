@@ -1,4 +1,5 @@
 ﻿using Backend_Barrustica.Models;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Metadata.Ecma335;
 
@@ -6,46 +7,74 @@ namespace Backend_Barrustica.Service
 {
     public interface IArtService
     {
-        Artist GetArtist(int artistId);
-        void AddArtist(string name, string description, string image);
-        Task<List<Artist>> GetListArtist();
+        Taller GetTaller(int tallerId);
+        void AddTaller(string name, string description, string image);
+        Task<List<Taller>> GetListTaller();
+        void AddSeminario(string name, string description, string image);
+        Task<List<Seminario>> GetListSeminario();
         Piece GetPiece(int pieceId);
         void AddPiece(string name, string description, string style, string image, int idArtist);
         Task<List<Piece>> GetListPiece();
+        void DeleteItem(string image, string type);
     }
     public class ArtService : IArtService
     {
-        public Artist GetArtist(int artistId)
+        public Taller GetTaller(int tallerId)
         {
-            Artist result;
+            Taller result;
             using (var context = new BarrusticaDbContext())
             {
-                result = context.ArtistEntity.First(a => a.Id == artistId);
+                result = context.TallerEntity.First(a => a.Id == tallerId);
             }
 
             return result;
         }
-        public void AddArtist(string name, string description, string image)
+        public void AddTaller(string name, string description, string image)
         {            
             using (var context = new BarrusticaDbContext())
             {
-                var newArtist = new Artist
+                var newTaller = new Taller
                 {
                     Name = name,
                     Description = description,
                     Image = image
                 };
 
-                context.ArtistEntity.Add(newArtist);
+                context.TallerEntity.Add(newTaller);
                 context.SaveChanges();
             }
         }
-        public async Task<List<Artist>> GetListArtist()
+        public async Task<List<Taller>> GetListTaller()
         {
-            List<Artist> result;
+            List<Taller> result;
             using (var context = new BarrusticaDbContext())
             {
-                result = await context.ArtistEntity.ToListAsync();
+                result = await context.TallerEntity.ToListAsync();
+            }
+
+            return result;
+        }
+        public void AddSeminario(string name, string description, string image)
+        {
+            using (var context = new BarrusticaDbContext())
+            {
+                var newSeminario = new Seminario
+                {
+                    Name = name,
+                    Description = description,
+                    Image = image
+                };
+
+                context.SeminarioEntity.Add(newSeminario);
+                context.SaveChanges();
+            }
+        }
+        public async Task<List<Seminario>> GetListSeminario()
+        {
+            List<Seminario> result;
+            using (var context = new BarrusticaDbContext())
+            {
+                result = await context.SeminarioEntity.ToListAsync();
             }
 
             return result;
@@ -86,6 +115,36 @@ namespace Backend_Barrustica.Service
             }
 
             return result;
+        }
+        public async void DeleteItem(string image, string type)
+        {
+            using (var context = new BarrusticaDbContext())
+            {
+                if(type == "taller")
+                {
+                    Taller? item;
+                    item = await context.TallerEntity.FirstOrDefaultAsync(a => a.Image == image);
+                    context.TallerEntity.Remove(item);
+                }
+                else if (type == "piece")
+                {
+                    Piece? item;
+                    item = await context.PieceEntity.FirstOrDefaultAsync(a => a.Image == image);
+                    context.PieceEntity.Remove(item);
+                }
+                else if (type == "seminario")
+                {
+                    Seminario? item;
+                    item = await context.SeminarioEntity.FirstOrDefaultAsync(a => a.Image == image);
+                    context.SeminarioEntity.Remove(item);
+                }
+                else
+                {
+                    throw new Exception("La entidad no se encontró o ya fue eliminada.");
+                }
+
+                context.SaveChanges();
+            }
         }
     }
 }
